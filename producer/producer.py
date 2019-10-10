@@ -6,21 +6,18 @@ import logging
 
 
 logging.basicConfig(filename='/tmp/producer.log',level=logging.INFO)
-brocker_started=bool(False)
 print(os.environ.get('KAFKA_SRVS'))
 logging.info('KAFKA_SRVS='+os.environ.get('KAFKA_SRVS'))
+
+brocker_started=bool(False)
 
 while brocker_started != True:
     try:
         producer = KafkaProducer(bootstrap_servers=[os.environ.get('KAFKA_SRVS')],
                                  max_block_ms=600000)
-#        producer = KafkaProducer(bootstrap_servers=[os.environ['kafka1']+'9092',os.environ['kafka2']+'9093',os.environ['kafka3']+'9094'])
     except:
-        print("Brocker NOT available!" )
-	
+        print("Brocker NOT available!")
         logging.info('Brocker NOT available!')
-#        logging.exception(str(e))
-#        producer =''
         time.sleep(10)
     else:
         brocker_started=bool(True)
