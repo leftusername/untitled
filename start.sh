@@ -20,6 +20,6 @@ export DOCKER_HOST_IP=$(ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+')
 #to run scripts on host system install python-kafka 
 pip3 install kafka
 
-#cd to directory whith project and run
+#cd to directory with project and run
 cd `dirname $0`
 docker-compose up --build

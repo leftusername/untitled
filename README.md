@@ -4,7 +4,7 @@
 
 ## Getting Started
 
-Запуск полностью автоматизирован
+Запуск и установка полностью автоматизированы, см. раздел "Installing"
 
 ### Prerequisites
 
@@ -17,6 +17,18 @@
 consumer загружает все сообщения из kafka и продолает полочуать новые в реалтайме. consumer и producer в контейнерах загружаются раньше кластера kafka, что бы предотвратить завершение контейнеров
 используется цикл с обработкой исключения. скрипты будут ждать кластер пока не подключатся
 
+Топис my-topic в котором ходят сообщения, создается автоматически с 5 партициями
+Если потребуется увеличить количество партиций можно:
+#### 1 расширить используя оригинальную kafka, скачав ее с оф сайта
+```
+kafka-topics.sh --bootstrap-server localhost:9092 --alter --topic my-topic --partitions 5
+```
+#### 2 установить перед первым стартом переменные
+в файле docker-compose.yml:
+````
+      KAFKA_NUM_PARTITIONS: 5
+      KAFKA_TOPIC_PARTITION_COUNT_MAP: "my-topic: 5"
+````
 
 ### Installing
 
@@ -29,11 +41,6 @@ chmod +x start.sh
 ./start.sh
 ```
 
-Топис my-topic в котором ходят сообщения, создается автоматически при запуске producer, но c дефолтными настройками,
-в результате созданный топик будет с 1 партицией. Необходимо расширить вручную используя :
-```
-kafka-topics.sh --bootstrap-server localhost:9092 --alter --topic my-topic --partitions 5
-```
 
 ## Running the tests
 
@@ -47,7 +54,7 @@ $DOCKER_HOST_IP
 Они должны указывать на ip докер интерфейса или реальный ип машины, но не 127.0.0.1 иначе в контейнере скрипт
 будет пытаться подключиться на внутренний локалхост, где kafka нет
 
-Окружение определяет скрипт start.sh если переменные не определены можно выполнить вручную:
+Окружение определяет скрипт start.sh если переменные не определены можно выполнить вручную до запуска start.sh:
 ```
 export KAFKA_SRVS=$(ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+'):9092
 export DOCKER_HOST_IP=$(ip -4 addr show docker0 | grep -Po 'inet \K[\d.]+')
@@ -82,11 +89,17 @@ python3 producer/producer.py
 
 результат будет виден в stdout и в логах /tmp/producer.log или /tmp/consumer.log
 
+###Проверить настройки топика
+Можно проверить количество партиций, и реплик для топика, необходимо скачать оригинальную kafka с оф сайта и выполнить:
 
+```
+kafka-topics.sh --bootstrap-server localhost:9092  --topic my-topic --describe
+```
 
 ## Задействовано
 
 * [Моуль kafka-python](https://kafka-python.readthedocs.io/en/master/usage.html)
-* [kafka](https://github.com/simplesteph/kafka-stack-docker-compose) - Готовая сборка kafka
-
-
+* [kafka compose](https://github.com/simplesteph/kafka-stack-docker-compose) - Готовая сборка kafka
+* [kafka compose](https://docs.confluent.io/3.0.1/cp-docker-images/docs/configuration.html) - Документация к готовой сборке kafka
+* [kafka](https://kafka.apache.org/downloads) - Чистая  kafka на оф сайте
+* [kafka](https://svn.apache.org/repos/asf/kafka/trunk/config/server.properties) - Документация  kafka

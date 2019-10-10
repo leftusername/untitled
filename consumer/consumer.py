@@ -20,7 +20,7 @@ while brocker_started != True:
                                  auto_offset_reset='earliest',
                                  enable_auto_commit=False)
     except Exception as e:
-        print("Brocker NOT started!")
+        print("Broker NOT started!")
         logging.info("Brocker NOT started!" )
         print(str(e))
         time.sleep(5)
